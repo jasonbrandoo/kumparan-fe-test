@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React from "react";
+import Posts from "./features/post/Posts";
+import { Box, Flex } from "@chakra-ui/layout";
+import Sidebar from "./components/Sidebar";
+import { useSelector } from "react-redux";
+import { menuSelector } from "./features/menu/menuSlice";
+import Users from "./features/user/Users";
+import Albums from "./features/album/Albums";
 
 function App() {
+  const active = useSelector(menuSelector);
+
+  const validateMenu = () => {
+    switch (active) {
+      case "users":
+        return <Users />;
+      case "posts":
+        return <Posts />;
+      case "albums":
+        return <Albums />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Flex>
+        <Sidebar />
+        <Box flex="1">{validateMenu()}</Box>
+      </Flex>
     </div>
   );
 }
