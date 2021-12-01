@@ -1,18 +1,15 @@
-import { Box, Stack } from "@chakra-ui/layout";
+import React from "react";
+import { Stack } from "@chakra-ui/layout";
 import {
   Button,
   Drawer,
   DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   useDisclosure,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import React from "react";
 import { useDispatch } from "react-redux";
 import { setActice } from "../features/menu/menuSlice";
 
@@ -71,7 +68,7 @@ const Sidebar = (props) => {
           <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
             <DrawerOverlay />
             <DrawerContent>
-              <DrawerHeader borderBottomWidth="1px">Basic Drawer</DrawerHeader>
+              <DrawerHeader borderBottomWidth="1px">Dashboard</DrawerHeader>
               <DrawerBody p="0">
                 <SidebarContent toggleMenu={toggleMenu} variant={variant} />
               </DrawerBody>

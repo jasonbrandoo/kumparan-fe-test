@@ -17,12 +17,18 @@ import {
 } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { postSelector, setPosts } from "../features/post/postSlice";
+import {
+  commentSelector,
+  postSelector,
+  setComments,
+  setPosts,
+} from "../features/post/postSlice";
 
 const ModalEdit = (props) => {
+  const { id, title, body, type } = props;
   const dispatch = useDispatch();
   const posts = useSelector(postSelector);
-  const { id, title, body } = props;
+  const comments = useSelector(commentSelector);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [postTitle, setPostTitle] = React.useState("");
   const [postBody, setPostBody] = React.useState("");
@@ -34,23 +40,42 @@ const ModalEdit = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(
-      setPosts(
-        posts.map((v) => {
-          if (v.post.id === id) {
-            return {
-              user: { ...v.user },
-              post: {
-                ...v.post,
-                title: postTitle,
+
+    if (type === "comment") {
+      dispatch(
+        setComments(
+          comments.map((v) => {
+            if (v.id === id) {
+              return {
+                ...v,
+                name: postTitle,
                 body: postBody,
-              },
-            };
-          }
-          return v;
-        })
-      )
-    );
+              };
+            }
+            return v;
+          })
+        )
+      );
+    } else {
+      dispatch(
+        setPosts(
+          posts.map((v) => {
+            if (v.post.id === id) {
+              return {
+                user: { ...v.user },
+                post: {
+                  ...v.post,
+                  title: postTitle,
+                  body: postBody,
+                },
+              };
+            }
+            return v;
+          })
+        )
+      );
+    }
+
     onClose();
   };
 

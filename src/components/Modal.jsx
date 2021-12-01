@@ -2,38 +2,39 @@ import React from "react";
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
   Heading,
+  HStack,
+  Input,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Stack,
-  HStack,
   Spacer,
-  Image,
+  Stack,
   Text,
+  Textarea,
   UnorderedList,
-  ListItem,
   useDisclosure,
 } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { Flex } from "@chakra-ui/layout";
+import { DeleteIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addComment,
   commentSelector,
   deletePost,
   getComments,
 } from "../features/post/postSlice";
 import Comment from "./Comment";
 import { menuSelector } from "../features/menu/menuSlice";
-import {
-  getAlbums,
-  getPhotos,
-  photoSelector,
-} from "../features/album/albumSlice";
+import { getPhotos, photoSelector } from "../features/album/albumSlice";
 import ModalEdit from "./EditModal";
+import DetailModal from "./DetailModal";
 
 const ModalPost = (props) => {
   const { users, posts, albums } = props;
@@ -43,6 +44,8 @@ const ModalPost = (props) => {
   const photos = useSelector(photoSelector);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [data, setData] = React.useState({});
+  const [postTitle, setPostTitle] = React.useState("");
+  const [postBody, setPostBody] = React.useState("");
 
   React.useEffect(() => {
     if (active === "users") {
@@ -107,7 +110,6 @@ const ModalPost = (props) => {
                 </UnorderedList>
               </UnorderedList>
             </ModalBody>
-            <ModalFooter></ModalFooter>
           </ModalContent>
         </Modal>
       </>
@@ -130,9 +132,14 @@ const ModalPost = (props) => {
               <Heading fontSize="md" textAlign="left">
                 {data?.user?.username}
               </Heading>
-              <Button variant="link" onClick={onOpen}>
+              <Box
+                as="button"
+                color="gray.500"
+                textAlign="left"
+                onClick={onOpen}
+              >
                 {data?.post?.title}
-              </Button>
+              </Box>
             </Stack>
             <Spacer />
             <ModalEdit
@@ -164,14 +171,58 @@ const ModalPost = (props) => {
                 {comments.map((v) => (
                   <Comment
                     key={v.id}
+                    id={v.id}
                     name={v.name}
                     email={v.email}
                     body={v.body}
                   />
                 ))}
               </Stack>
+              <Box padding={5}>
+                <Heading fontSize="lg">Add Comment</Heading>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const commentData = comments.find(
+                      (v) => v.id === data?.post?.id
+                    );
+                    const payload = {
+                      ...commentData,
+                      name: postTitle,
+                      body: postBody,
+                    };
+                    dispatch(addComment(payload));
+                    setPostTitle("");
+                    setPostBody("");
+                  }}
+                >
+                  <Stack>
+                    <FormControl id="title">
+                      <FormLabel>Title</FormLabel>
+                      <Input
+                        value={postTitle}
+                        onChange={(e) => setPostTitle(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormControl id="body">
+                      <FormLabel>Body</FormLabel>
+                      <Textarea
+                        value={postBody}
+                        onChange={(e) => setPostBody(e.target.value)}
+                      />
+                    </FormControl>
+                  </Stack>
+                  <HStack justifyContent="end" marginTop={2}>
+                    <Button colorScheme="red" mr={2} onClick={onClose}>
+                      Batal
+                    </Button>
+                    <Button colorScheme="blue" type="submit">
+                      Simpan
+                    </Button>
+                  </HStack>
+                </form>
+              </Box>
             </ModalBody>
-            <ModalFooter></ModalFooter>
           </ModalContent>
         </Modal>
       </>
@@ -204,24 +255,17 @@ const ModalPost = (props) => {
               <Heading fontSize="md" mb={4}>
                 {data?.album?.title}
               </Heading>
-              <Stack
-                direction="row"
-                flexWrap="wrap"
-                justifyContent="center"
-                alignItems="center"
-              >
+              <Flex flexWrap="wrap" justifyContent="center">
                 {photos.map((v) => (
-                  <Image
+                  <DetailModal
                     key={v.id}
-                    borderRadius="full"
-                    boxSize="150px"
-                    src={v.thumbnailUrl}
-                    alt={v.title}
+                    thumbnailUrl={v.thumbnailUrl}
+                    title={v.title}
+                    url={v.url}
                   />
                 ))}
-              </Stack>
+              </Flex>
             </ModalBody>
-            <ModalFooter></ModalFooter>
           </ModalContent>
         </Modal>
       </>

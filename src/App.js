@@ -1,4 +1,3 @@
-import "./App.css";
 import React from "react";
 import Posts from "./features/post/Posts";
 import { Box, Flex } from "@chakra-ui/layout";
@@ -30,7 +29,9 @@ function App() {
     <div className="App">
       <Flex>
         <Sidebar variant={variant} />
-        <Box flex="1">{validateMenu()}</Box>
+        <Box flex="1" width="70%">
+          {validateMenu()}
+        </Box>
       </Flex>
     </div>
   );

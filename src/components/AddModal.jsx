@@ -29,13 +29,15 @@ const AddModal = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const lastPost = posts[0];
+    const firstPost = posts[0];
+    const id = posts[posts.length - 1].post.id;
 
     dispatch(
       addPost({
-        user: lastPost.user,
+        user: firstPost.user,
         post: {
-          ...lastPost.post,
+          ...firstPost.post,
+          id: id + 1,
           title: postTitle,
           body: postBody,
         },

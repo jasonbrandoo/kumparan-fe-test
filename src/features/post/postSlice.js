@@ -3,9 +3,15 @@ import apiRoutes from "../../api";
 
 export const getPosts = createAsyncThunk(
   "posts/get",
-  async (data, { rejectWithValue }) => {
+  async (page = 1, { rejectWithValue, dispatch }) => {
+    dispatch(setLoading(true));
     try {
-      const responsePost = await apiRoutes.get("/posts");
+      const responsePost = await apiRoutes.get("/posts", {
+        params: {
+          _page: page,
+          _limit: 15,
+        },
+      });
       const responseUser = await apiRoutes.get("/users");
       const data = responsePost.map((postValue) => {
         const userValue = responseUser.find(
@@ -16,8 +22,12 @@ export const getPosts = createAsyncThunk(
           post: { ...postValue },
         };
       });
+      dispatch(setLoading(false));
+
       return data;
     } catch (error) {
+      dispatch(setLoading(false));
+
       return rejectWithValue(error);
     }
   }
@@ -52,23 +62,51 @@ export const deletePost = createAsyncThunk(
   }
 );
 
+export const deleteComment = createAsyncThunk(
+  "comment/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      await apiRoutes.delete("/comments", id);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const postSlice = createSlice({
   name: "postSlice",
   initialState: {
     posts: [],
     comments: [],
+    page: 0,
+    loading: false,
   },
   reducers: {
     setPosts: (state, action) => {
       state.posts = action.payload;
     },
+    setComments: (state, action) => {
+      state.comments = action.payload;
+    },
     addPost: (state, action) => {
       state.posts.unshift(action.payload);
+    },
+    addComment: (state, action) => {
+      state.comments.push(action.payload);
+    },
+    setPage: (state, action) => {
+      state.page = state.page + 1;
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(getPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
+      if (!state.loading) {
+        state.posts = [...state.posts, ...action.payload];
+      }
     });
     builder.addCase(getComments.fulfilled, (state, action) => {
       state.comments = action.payload;
@@ -76,12 +114,24 @@ export const postSlice = createSlice({
     builder.addCase(deletePost.fulfilled, (state, action) => {
       state.posts = state.posts.filter((v) => v.post.id !== action.payload);
     });
+    builder.addCase(deleteComment.fulfilled, (state, action) => {
+      state.comments = state.comments.filter((v) => v.id !== action.payload);
+    });
   },
 });
 
-export const { setPosts, addPost } = postSlice.actions;
+export const {
+  setPosts,
+  setComments,
+  addPost,
+  addComment,
+  setPage,
+  setLoading,
+} = postSlice.actions;
 
 export const postSelector = (state) => state.post.posts;
 export const commentSelector = (state) => state.post.comments;
+export const pageSelector = (state) => state.post.page;
+export const loadingSelector = (state) => state.post.loading;
 
 export default postSlice.reducer;

@@ -1,5 +1,5 @@
-import { Box, Heading, Text, VStack } from "@chakra-ui/layout";
 import React from "react";
+import { Box, Heading, VStack } from "@chakra-ui/layout";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../../components/Modal";
 import { menuSelector } from "../menu/menuSlice";
@@ -17,11 +17,16 @@ const Albums = () => {
   }, [active, dispatch]);
 
   return (
-    <VStack overflowX="hidden" height="100vh" padding={5}>
-      {albums.map((v) => (
-        <Modal key={v.id} albums={v} />
-      ))}
-    </VStack>
+    <Box overflowX="hidden" height="100vh">
+      <Heading my={4} textAlign="center">
+        List Of All Album Each User
+      </Heading>
+      <VStack overflowX="hidden" height="100vh" padding={5}>
+        {albums.map((v) => (
+          <Modal key={v.id} albums={v} />
+        ))}
+      </VStack>
+    </Box>
   );
 };
 
