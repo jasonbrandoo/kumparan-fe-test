@@ -15,6 +15,14 @@ const apiRoutes = {
       return error.response;
     }
   },
+  delete: async (route, id) => {
+    try {
+      const response = await api.delete(`${route}/${id}`);
+      return response.data;
+    } catch (error) {
+      return error.response;
+    }
+  },
 };
 
 export default apiRoutes;

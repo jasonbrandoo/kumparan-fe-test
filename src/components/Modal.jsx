@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Box,
+  Button,
   Heading,
   Modal,
   ModalBody,
@@ -10,14 +11,21 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  HStack,
+  Spacer,
   Image,
   Text,
   UnorderedList,
   ListItem,
   useDisclosure,
 } from "@chakra-ui/react";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { commentSelector, getComments } from "../features/post/postSlice";
+import {
+  commentSelector,
+  deletePost,
+  getComments,
+} from "../features/post/postSlice";
 import Comment from "./Comment";
 import { menuSelector } from "../features/menu/menuSlice";
 import {
@@ -25,6 +33,7 @@ import {
   getPhotos,
   photoSelector,
 } from "../features/album/albumSlice";
+import ModalEdit from "./EditModal";
 
 const ModalPost = (props) => {
   const { users, posts, albums } = props;
@@ -107,23 +116,40 @@ const ModalPost = (props) => {
     content = (
       <>
         <Box
-          as="button"
           bg="gray.200"
           color="gray.900"
           width="80%"
           borderRadius="base"
           p="1rem"
           _hover={{
-            bg: "gray.400",
+            bg: "gray.300",
           }}
-          onClick={onOpen}
         >
-          <Heading fontSize="md" textAlign="left">
-            {data?.user?.username}
-          </Heading>
-          <Heading fontSize="md" textAlign="left">
-            {data?.post?.title}
-          </Heading>
+          <HStack>
+            <Stack>
+              <Heading fontSize="md" textAlign="left">
+                {data?.user?.username}
+              </Heading>
+              <Button variant="link" onClick={onOpen}>
+                {data?.post?.title}
+              </Button>
+            </Stack>
+            <Spacer />
+            <ModalEdit
+              id={data?.post?.id}
+              title={data?.post?.title}
+              body={data?.post?.body}
+            />
+            <Button
+              colorScheme="red"
+              size="sm"
+              onClick={() => {
+                dispatch(deletePost(data?.post?.id));
+              }}
+            >
+              <DeleteIcon />
+            </Button>
+          </HStack>
           <Text textAlign="left">{data?.post?.body}</Text>
         </Box>
         <Modal isOpen={isOpen} onClose={onClose}>

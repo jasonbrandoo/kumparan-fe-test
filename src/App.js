@@ -2,6 +2,7 @@ import "./App.css";
 import React from "react";
 import Posts from "./features/post/Posts";
 import { Box, Flex } from "@chakra-ui/layout";
+import { useBreakpointValue } from "@chakra-ui/react";
 import Sidebar from "./components/Sidebar";
 import { useSelector } from "react-redux";
 import { menuSelector } from "./features/menu/menuSlice";
@@ -10,6 +11,7 @@ import Albums from "./features/album/Albums";
 
 function App() {
   const active = useSelector(menuSelector);
+  const variant = useBreakpointValue({ base: "drawer", md: "sidebar" });
 
   const validateMenu = () => {
     switch (active) {
@@ -27,7 +29,7 @@ function App() {
   return (
     <div className="App">
       <Flex>
-        <Sidebar />
+        <Sidebar variant={variant} />
         <Box flex="1">{validateMenu()}</Box>
       </Flex>
     </div>
